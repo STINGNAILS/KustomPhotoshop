@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KustomPhotoshop.Interfaces
+namespace KustomPhotoshop
 {
 	public interface IDrawable
 	{

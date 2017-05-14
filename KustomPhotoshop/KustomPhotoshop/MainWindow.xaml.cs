@@ -20,9 +20,18 @@ namespace KustomPhotoshop
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+        private List<IDrawable> figures;
+
+
+
+
+
 		public MainWindow()
 		{
 			InitializeComponent();
 		}
+
+
+
 	}
 }

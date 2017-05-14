@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace KustomPhotoshop.Interfaces
+namespace KustomPhotoshop
 {
 	public interface ITransform
 	{

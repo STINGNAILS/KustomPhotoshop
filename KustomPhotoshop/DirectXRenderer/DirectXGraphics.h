@@ -12,8 +12,6 @@ class DirectXGraphics
 	ID3D11DeviceContext *painter;
 	IDXGISwapChain *swapChain;
 	ID3D11RenderTargetView *renderTargetView;
-	ID3D11DepthStencilView *depthStencilView;
-	ID3D11Texture2D *depthStencilBuffer;
 
 	D3D11_VIEWPORT viewport;
 
@@ -26,6 +24,7 @@ class DirectXGraphics
 	ID3D11DeviceContext *GetPainter();
 
 	HRESULT Init(HWND hwnd);
+	HRESULT Resize(HWND hwnd);
 
 	void BeginRender();
 	void FinishRender();

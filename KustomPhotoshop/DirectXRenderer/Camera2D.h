@@ -14,8 +14,7 @@ class Camera2D
 	XMFLOAT4X4 view;
 	XMFLOAT4X4 proj;
 
-	XMMATRIX zoomInM;
-	XMMATRIX zoomOutM;
+	XMMATRIX zoomM;
 
 	double speed;
 
@@ -25,6 +24,7 @@ class Camera2D
 	~Camera2D();
 
 	void SetPosition(XMFLOAT3 position_);
+	void SetZoom(float scale);
 	void SetOrthographicView(float height, float ratio);
 
 	const XMMATRIX View();

@@ -1,10 +1,42 @@
-﻿<Window x:Class="KustomPhotoshop.MainWindow"
+﻿<Window x:Name="window" x:Class="KustomPhotoshop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:renderers ="clr-namespace:KustomPhotoshop"
         xmlns:local="clr-namespace:KustomPhotoshop"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid/>
+        Title="Kustom Photoshop" Height="564" Width="881" Closed="OnExit" KeyDown="OnKeyDown">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="250"/>
+        </Grid.ColumnDefinitions>
+        <WindowsFormsHost Name="HostDirectX" Grid.Column="1">
+            <renderers:DirectXControl x:Name="directXControl" MouseDown="DirectXRenderer_OnMouseDown" MouseMove="DirectXRenderer_OnMouseMove" MouseWheel="DirectXRenderer_OnMouseWheel" MouseUp="DirectXRenderer_OnMouseUp" SizeChanged="DirectXControl_SizeChanged" Paint="DirectXControl_Paint"/>
+        </WindowsFormsHost>
+        <UserControl Grid.Column="0" Background="#FF404040"/>
+        <UserControl Grid.Column="2" Background="#FF404040"/>
+        <ToggleButton x:Name="polyLineButton" Content="PolyLine" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="64" Background="Black" Checked="polyLineButton_Checked"/>
+        <ToggleButton x:Name="triangleButton" Content="Triangle" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="64" Background="Black" Margin="0,64,0,0" Checked="triangleButton_Checked"/>
+        <ToggleButton x:Name="quadButton" Content="Quad" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="64" Background="Black" Margin="0,128,0,0" Checked="quadButton_Checked"/>
+        <ToggleButton x:Name="ellipseButton" Content="Ellipse" HorizontalAlignment="Left" VerticalAlignment="Top" Width="64" Height="64" Background="Black" Margin="0,192,0,0" Checked="ellipseButton_Checked"/>
+        <Label x:Name="label1" Content="Figure properties" Grid.Column="2" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="16"/>
+        <Label x:Name="label2" Content="Figure color" Grid.Column="2" HorizontalAlignment="Left" Margin="30,32,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <xctk:ColorPicker x:Name="figureColorPicker" SelectedColor="{Binding CurrentColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=window}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="22" Margin="140,38,0,0" Background="#FF404040"/>
+        <Label x:Name="label3" Content="Border color" Grid.Column="2" HorizontalAlignment="Left" Margin="30,66,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <xctk:ColorPicker x:Name="borderColorPicker" SelectedColor="{Binding CurrentBorderColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=window}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="22" Margin="140,72,0,0" Background="#FF404040"/>
+        <Label x:Name="label4" Content="Border width" Grid.Column="2" HorizontalAlignment="Left" Margin="30,100,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="labelWidth" Content="1.00" Grid.Column="2" HorizontalAlignment="Left" Margin="140,100,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Slider x:Name="slider" Value="{Binding CurrentBorderWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ElementName=window}" Grid.Column="2" HorizontalAlignment="Left" Margin="36,140,0,0" VerticalAlignment="Top" Width="204" IsMoveToPointEnabled="True"/>
+        <Separator Grid.Column="2" HorizontalAlignment="Left" Height="100" Margin="10,124,0,0" VerticalAlignment="Top" Width="230"/>
+        <Label x:Name="viewLabel" Content="View properties" Grid.Column="2" HorizontalAlignment="Left" Margin="10,180,0,0" VerticalAlignment="Top" FontFamily="Segoe UI Semibold" FontSize="16"/>
+        <Label x:Name="label5" Content="Coordinates" Grid.Column="2" HorizontalAlignment="Left" Margin="30,212,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="coordsLabel" Content="0 0" Grid.Column="2" HorizontalAlignment="Left" Margin="140,212,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="label6" Content="Zoom" Grid.Column="2" HorizontalAlignment="Left" Margin="30,246,0,0" VerticalAlignment="Top" FontSize="16"/>
+        <Label x:Name="zoomLabel" Content="100" Grid.Column="2" HorizontalAlignment="Left" Margin="140,246,0,0" VerticalAlignment="Top" FontSize="16"/>
+    </Grid>
 </Window>

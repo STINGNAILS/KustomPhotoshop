@@ -6,7 +6,6 @@ struct TriangleVertex
 {
 	XMFLOAT3 pos;
 	XMFLOAT4 color;
-	XMFLOAT4 borderColor;
 };
 
 
@@ -44,8 +43,7 @@ HRESULT Triangle::InitFX(ID3D11Device *device, LPCWSTR fileName)
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
 	hr = device->CreateInputLayout(layout, ARRAYSIZE(layout), shaderBlob->GetBufferPointer(), shaderBlob->GetBufferSize(), &inputLayout);
@@ -84,38 +82,38 @@ HRESULT Triangle::InitFX(ID3D11Device *device, LPCWSTR fileName)
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.FrontCounterClockwise = false;
 	rasterizerDesc.DepthClipEnable = true;
 
 	hr = device->CreateRasterizerState(&rasterizerDesc, &basicRasterizerState);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = borderLine.InitFX(device, L"PolyLineShader.hlsl");
 
 	return hr;
 }
 
 
-HRESULT Triangle::InitGeometry(ID3D11Device *device, XMFLOAT3 v1_, XMFLOAT3 v2_, XMFLOAT3 v3_, XMFLOAT4 color, XMFLOAT4 borderColor, float width_)
+HRESULT Triangle::InitGeometry(ID3D11Device *device, XMFLOAT3 v1, XMFLOAT3 v2, XMFLOAT3 v3, XMFLOAT4 color, XMFLOAT4 borderColor, float width_)
 {
 	width = width_;
-	v1 = v1_;
-	v2 = v2_;
-	v3 = v3_;
 
 	HRESULT hr = S_OK;
 
-	vector<TriangleVertex> triangleVertices(36);
+	vector<TriangleVertex> triangleVertices(3);
 
 	triangleVertices[0].pos = v1;
 	triangleVertices[0].color = color;
-	triangleVertices[0].borderColor = borderColor;
 
 	triangleVertices[1].pos = v2;
 	triangleVertices[1].color = color;
-	triangleVertices[1].borderColor = borderColor;
 
 	triangleVertices[2].pos = v3;
 	triangleVertices[2].color = color;
-	triangleVertices[2].borderColor = borderColor;
 
 	D3D11_BUFFER_DESC vbDesc;
 	vbDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -129,6 +127,22 @@ HRESULT Triangle::InitGeometry(ID3D11Device *device, XMFLOAT3 v1_, XMFLOAT3 v2_,
 	vbData.pSysMem = &triangleVertices[0];
 
 	hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	vector<float> points(8);
+	points[0] = v1.x;
+	points[1] = v1.y;
+	points[2] = v2.x;
+	points[3] = v2.y;
+	points[4] = v3.x;
+	points[5] = v3.y;
+	points[6] = v1.x;
+	points[7] = v1.y;
+
+	hr = borderLine.InitGeometry(device, points, width, borderColor, 0.0f);
 
 	return hr;
 }
@@ -149,8 +163,6 @@ void Triangle::Render(ID3D11DeviceContext *painter, Camera2D &camera)
 
 	TriangleCB triangleCB;
 	XMStoreFloat4x4(&triangleCB.viewProj, XMMatrixTranspose(viewProjM));
-	triangleCB.v1v2 = XMFLOAT4(v1.x, v1.y, v2.x, v2.y);
-	triangleCB.v3Width = XMFLOAT4(v3.x, v3.y, width, 0.0f);
 
 	painter->UpdateSubresource(triangleConstantBuffer, 0, 0, &triangleCB, 0, 0);
 
@@ -163,6 +175,8 @@ void Triangle::Render(ID3D11DeviceContext *painter, Camera2D &camera)
 	painter->Draw(3, 0);
 
 	painter->RSSetState(0);
+
+	borderLine.Render(painter, camera);
 }
 
 
@@ -173,12 +187,16 @@ void Triangle::ReleaseFX()
 	if (basicRasterizerState) basicRasterizerState->Release();
 	if (vertexShader) vertexShader->Release();
 	if (pixelShader) pixelShader->Release();
+
+	borderLine.ReleaseFX();
 }
 
 
 void Triangle::ReleaseGeometry()
 {
 	if (vertexBuffer) vertexBuffer->Release();
+
+	borderLine.ReleaseGeometry();
 }
 
 

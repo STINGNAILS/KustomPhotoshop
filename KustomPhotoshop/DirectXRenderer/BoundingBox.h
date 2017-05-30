@@ -3,40 +3,46 @@
 #include <vector>
 #include "DirectXDependencies.h"
 #include "DirectXGraphics.h"
-#include "PolyLine.h"
 #include "Camera2D.h"
 
 using namespace std;
 
 
-struct TriangleCB
+struct BoundingBoxCB
 {
 	XMFLOAT4X4 viewProj;
+	XMFLOAT4 boundaries;
+	float currentZoom;
+	float aligner1;
+	float aligner2;
+	float aligner3;
 };
 
 
-class Triangle
+class BoundingBox
 {
 	private:
 
-	float width;
+	XMFLOAT4 boundaries;
+	float currentZoom;
 
 	ID3D11InputLayout *inputLayout;
 	ID3D11Buffer *vertexBuffer;
-	ID3D11Buffer *triangleConstantBuffer;
+	ID3D11Buffer *boundingBoxConstantBuffer;
 	ID3D11RasterizerState *basicRasterizerState;
+	ID3D11BlendState *transparentBlendState;
 	ID3D11VertexShader *vertexShader;
 	ID3D11PixelShader *pixelShader;
 
-	PolyLine borderLine;
-
 	public:
 
-	Triangle();
-	~Triangle();
+	BoundingBox();
+	~BoundingBox();
 
 	HRESULT InitFX(ID3D11Device *device, LPCWSTR fileName);
-	HRESULT InitGeometry(ID3D11Device *device, XMFLOAT3 v1, XMFLOAT3 v2, XMFLOAT3 v3, XMFLOAT4 color, XMFLOAT4 borderColor, float width_);
+	HRESULT InitGeometry(ID3D11Device *device, XMFLOAT3 minPoint, XMFLOAT3 maxPoint);
+
+	void SetZoom(float currentZoom_);
 
 	void Render(ID3D11DeviceContext *painter, Camera2D &camera);
 

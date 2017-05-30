@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "DirectXGraphics.h"
 
 
@@ -5,6 +6,11 @@ DirectXGraphics::DirectXGraphics()
 {
 	driverType = D3D_DRIVER_TYPE_NULL;
 	featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	device = NULL;
+	painter = NULL;
+	swapChain = NULL;
+	renderTargetView = NULL;
 }
 
 
@@ -83,6 +89,29 @@ HRESULT DirectXGraphics::Init(HWND hwnd)
 	{
 		return hr;
 	}
+	
+	hr = Resize(hwnd);
+
+	return hr;
+}
+
+
+HRESULT DirectXGraphics::Resize(HWND hwnd)
+{
+	HRESULT hr = S_OK;
+
+	RECT rc;
+	GetClientRect(hwnd, &rc);
+	UINT width = rc.right - rc.left;
+	UINT height = rc.bottom - rc.top;
+
+	if(renderTargetView) renderTargetView->Release();
+
+	hr = swapChain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
 
 	ID3D11Texture2D *backBuffer = 0;
 	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
@@ -93,31 +122,6 @@ HRESULT DirectXGraphics::Init(HWND hwnd)
 
 	hr = device->CreateRenderTargetView(backBuffer, 0, &renderTargetView);
 	backBuffer->Release();
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	D3D11_TEXTURE2D_DESC depthStencilDesc;
-	depthStencilDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags = 0;
-	depthStencilDesc.MiscFlags = 0;
-	depthStencilDesc.Width = width;
-	depthStencilDesc.Height = height;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.ArraySize = 1;
-	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-
-	hr = device->CreateTexture2D(&depthStencilDesc, 0, &depthStencilBuffer);
-	if (FAILED(hr))
-	{
-		return hr;
-	}
-
-	hr = device->CreateDepthStencilView(depthStencilBuffer, 0, &depthStencilView);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -138,9 +142,8 @@ void DirectXGraphics::BeginRender()
 {
 	const float clearColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	painter->ClearRenderTargetView(renderTargetView, clearColor);
-	painter->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	painter->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	painter->OMSetRenderTargets(1, &renderTargetView, 0);
 	painter->RSSetViewports(1, &viewport);
 }
 
@@ -190,6 +193,4 @@ void DirectXGraphics::Release()
 	if (painter) painter->Release();
 	if (swapChain) swapChain->Release();
 	if (renderTargetView) renderTargetView->Release();
-	if (depthStencilView) depthStencilView->Release();
-	if (depthStencilBuffer) depthStencilBuffer->Release();
 }

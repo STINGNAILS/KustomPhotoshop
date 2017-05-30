@@ -11,13 +11,10 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
 [Xx]64/
 [Xx]86/
 [Bb]uild/
 bld/
-[Oo]bj/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -143,18 +140,6 @@ publish/
 #*.pubxml
 *.publishproj
 
-# NuGet Packages
-*.nupkg
-# The packages folder can be ignored because of Package Restore
-**/packages/*
-# except build/, which is used as an MSBuild target.
-!**/packages/build/
-# Uncomment if necessary however generally it will be regenerated when needed
-#!**/packages/repositories.config
-# NuGet v3's project.json files produces more ignoreable files
-*.nuget.props
-*.nuget.targets
-
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
@@ -162,10 +147,6 @@ csx/
 # Microsoft Azure Emulator
 ecf/
 rcf/
-
-# Windows Store app package directory
-AppPackages/
-BundleArtifacts/
 
 # Visual Studio cache files
 # files ending in .cache can be ignored

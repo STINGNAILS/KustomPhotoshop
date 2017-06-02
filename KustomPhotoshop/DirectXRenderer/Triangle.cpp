@@ -73,7 +73,7 @@ HRESULT Triangle::InitFX(ID3D11Device *device, LPCWSTR fileName)
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
 
-	hr = device->CreateBuffer(&bufferDesc, 0, &triangleConstantBuffer);
+	hr = device->CreateBuffer(&bufferDesc, 0, &constantBuffer);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -100,8 +100,6 @@ HRESULT Triangle::InitFX(ID3D11Device *device, LPCWSTR fileName)
 
 HRESULT Triangle::InitGeometry(ID3D11Device *device, XMFLOAT3 v1, XMFLOAT3 v2, XMFLOAT3 v3, XMFLOAT4 color, XMFLOAT4 borderColor, float width_)
 {
-	width = width_;
-
 	HRESULT hr = S_OK;
 
 	vector<TriangleVertex> triangleVertices(3);
@@ -142,7 +140,7 @@ HRESULT Triangle::InitGeometry(ID3D11Device *device, XMFLOAT3 v1, XMFLOAT3 v2, X
 	points[6] = v1.x;
 	points[7] = v1.y;
 
-	hr = borderLine.InitGeometry(device, points, width, borderColor, 0.0f);
+	hr = borderLine.InitGeometry(device, points, width_, borderColor);
 
 	return hr;
 }
@@ -164,13 +162,13 @@ void Triangle::Render(ID3D11DeviceContext *painter, Camera2D &camera)
 	TriangleCB triangleCB;
 	XMStoreFloat4x4(&triangleCB.viewProj, XMMatrixTranspose(viewProjM));
 
-	painter->UpdateSubresource(triangleConstantBuffer, 0, 0, &triangleCB, 0, 0);
+	painter->UpdateSubresource(constantBuffer, 0, 0, &triangleCB, 0, 0);
 
 	painter->VSSetShader(vertexShader, 0, 0);
-	painter->VSSetConstantBuffers(0, 1, &triangleConstantBuffer);
+	painter->VSSetConstantBuffers(0, 1, &constantBuffer);
 
 	painter->PSSetShader(pixelShader, 0, 0);
-	painter->PSSetConstantBuffers(0, 1, &triangleConstantBuffer);
+	painter->PSSetConstantBuffers(0, 1, &constantBuffer);
 
 	painter->Draw(3, 0);
 
@@ -183,7 +181,7 @@ void Triangle::Render(ID3D11DeviceContext *painter, Camera2D &camera)
 void Triangle::ReleaseFX()
 {
 	if (inputLayout) inputLayout->Release();
-	if (triangleConstantBuffer) triangleConstantBuffer->Release();
+	if (constantBuffer) constantBuffer->Release();
 	if (basicRasterizerState) basicRasterizerState->Release();
 	if (vertexShader) vertexShader->Release();
 	if (pixelShader) pixelShader->Release();

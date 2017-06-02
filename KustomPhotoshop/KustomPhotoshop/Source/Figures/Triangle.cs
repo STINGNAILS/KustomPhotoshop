@@ -12,10 +12,7 @@ namespace KustomPhotoshop
 	{
 		public Triangle(Point p1, Point p2, Point p3, Color color_, Color borderColor_, float borderWidth_)
 		{
-			points = new List<Point>();
-			points.Add(p1);
-			points.Add(p2);
-			points.Add(p3);
+			points = new List<Point>() { p1, p2, p3 };
 			color = color_;
 			borderColor = borderColor_;
 			borderWidth = borderWidth_;
@@ -32,7 +29,7 @@ namespace KustomPhotoshop
 
 		public void Modify(IRenderer renderer)
 		{
-			if(id != -1)
+			if(ID != -1)
 			{
 				renderer.ModifyTriangle(ID, points, color, borderColor, borderWidth);
 			}
@@ -41,7 +38,7 @@ namespace KustomPhotoshop
 
 		public void Draw(IRenderer renderer)
 		{
-			if(id != -1)
+			if(ID != -1)
 			{
 				renderer.RenderTriangle(ID);
 			}
@@ -57,7 +54,7 @@ namespace KustomPhotoshop
 		}
 
 
-		public bool PointIsInside(Point p)
+		public override bool PointIsInside(Point p)
 		{
 			Point a = points[0];
 			Point b = points[1];

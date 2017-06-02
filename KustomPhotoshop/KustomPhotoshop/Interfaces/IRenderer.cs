@@ -13,12 +13,12 @@ namespace KustomPhotoshop
 		int AddPolyLine(List<Point> points, Color color, float width);
 		int AddTriangle(List<Point> points, Color color, Color borderColor, float width);
 		int AddQuad(List<Point> points, Color color, Color borderColor, float width);
-		int AddEllipse(List<Point> points, Color color, Color borderColor, float width);
+		int AddEllipse(Point o, float aO, float bO, float angle, Color color, Color borderColor, float width);
 
 		void ModifyPolyLine(int polyLineIndex, List<Point> points, Color color, float width);
 		void ModifyTriangle(int triangleIndex, List<Point> points, Color color, Color borderColor, float width);
 		void ModifyQuad(int quadIndex, List<Point> points, Color color, Color borderColor, float width);
-		void ModifyEllipse(int ellipseIndex, List<Point> points, Color color, Color borderColor, float width);
+		void ModifyEllipse(int ellipseIndex, Point o, float aO, float bO, float angle, Color color, Color borderColor, float width);
 		void ModifyBoundingBox(List<Point> points);
 
 		void RenderPolyLine(int polyLineIndex);

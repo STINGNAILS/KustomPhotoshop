@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace KustomPhotoshop
 {
-    public class DirectXRenderer : IRenderer
+	public class DirectXRenderer : IRenderer
 	{
 		public int AddPolyLine(List<Point> points, Color color, float width)
 		{
@@ -34,35 +34,63 @@ namespace KustomPhotoshop
 
 
 		public int AddTriangle(List<Point> points, Color color, Color borderColor, float width)
-        {
-            float x1 = (float)points[0].X;
-            float y1 = (float)points[0].Y;
-            float x2 = (float)points[1].X;
-            float y2 = (float)points[1].Y;
-            float x3 = (float)points[2].X;
-            float y3 = (float)points[2].Y;
+		{
+			float x1 = (float)points[0].X;
+			float y1 = (float)points[0].Y;
+			float x2 = (float)points[1].X;
+			float y2 = (float)points[1].Y;
+			float x3 = (float)points[2].X;
+			float y3 = (float)points[2].Y;
 
-            float r = color.R / 255.0f;
-            float g = color.G / 255.0f;
-            float b = color.B / 255.0f;
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
 
-            float rB = borderColor.R / 255.0f;
-            float gB = borderColor.G / 255.0f;
-            float bB = borderColor.B / 255.0f;
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
 
-            return DirectXDll.AddTriangle(x1, y1, x2, y2, x3, y3, r, g, b, rB, gB, bB, width);
-        }
-
-
-        public int AddQuad(List<Point> points, Color color, Color borderColor, float width)
-        {
-            throw new NotImplementedException();
-        }
+			return DirectXDll.AddTriangle(x1, y1, x2, y2, x3, y3, r, g, b, rB, gB, bB, width);
+		}
 
 
-        public int AddEllipse(List<Point> points, Color color, Color borderColor, float width)
-        {
-            throw new NotImplementedException();
+		public int AddQuad(List<Point> points, Color color, Color borderColor, float width)
+		{
+			float x1 = (float)points[0].X;
+			float y1 = (float)points[0].Y;
+			float x2 = (float)points[1].X;
+			float y2 = (float)points[1].Y;
+			float x3 = (float)points[2].X;
+			float y3 = (float)points[2].Y;
+			float x4 = (float)points[3].X;
+			float y4 = (float)points[3].Y;
+
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
+
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
+
+			return DirectXDll.AddQuad(x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, rB, gB, bB, width);
+		}
+
+
+		public int AddEllipse(Point o, float aO, float bO, float angle, Color color, Color borderColor, float width)
+		{
+			float x = (float)o.X;
+			float y = (float)o.Y;
+
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
+
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
+
+			return DirectXDll.AddEllipse(x, y, aO, bO, angle, r, g, b, rB, gB, bB, width);
 		}
 
 
@@ -90,35 +118,63 @@ namespace KustomPhotoshop
 
 
 		public void ModifyTriangle(int triangleIndex, List<Point> points, Color color, Color borderColor, float width)
-        {
-            float x1 = (float)points[0].X;
-            float y1 = (float)points[0].Y;
-            float x2 = (float)points[1].X;
-            float y2 = (float)points[1].Y;
-            float x3 = (float)points[2].X;
-            float y3 = (float)points[2].Y;
+		{
+			float x1 = (float)points[0].X;
+			float y1 = (float)points[0].Y;
+			float x2 = (float)points[1].X;
+			float y2 = (float)points[1].Y;
+			float x3 = (float)points[2].X;
+			float y3 = (float)points[2].Y;
 
-            float r = color.R / 255.0f;
-            float g = color.G / 255.0f;
-            float b = color.B / 255.0f;
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
 
-            float rB = borderColor.R / 255.0f;
-            float gB = borderColor.G / 255.0f;
-            float bB = borderColor.B / 255.0f;
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
 
-            DirectXDll.ModifyTriangle(triangleIndex, x1, y1, x2, y2, x3, y3, r, g, b, rB, gB, bB, width);
-        }
-
-
-        public void ModifyQuad(int quadIndex, List<Point> points, Color color, Color borderColor, float width)
-        {
-            throw new NotImplementedException();
-        }
+			DirectXDll.ModifyTriangle(triangleIndex, x1, y1, x2, y2, x3, y3, r, g, b, rB, gB, bB, width);
+		}
 
 
-        public void ModifyEllipse(int ellipseIndex, List<Point> points, Color color, Color borderColor, float width)
-        {
-            throw new NotImplementedException();
+		public void ModifyQuad(int quadIndex, List<Point> points, Color color, Color borderColor, float width)
+		{
+			float x1 = (float)points[0].X;
+			float y1 = (float)points[0].Y;
+			float x2 = (float)points[1].X;
+			float y2 = (float)points[1].Y;
+			float x3 = (float)points[2].X;
+			float y3 = (float)points[2].Y;
+			float x4 = (float)points[3].X;
+			float y4 = (float)points[3].Y;
+
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
+
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
+
+			DirectXDll.ModifyQuad(quadIndex, x1, y1, x2, y2, x3, y3, x4, y4, r, g, b, rB, gB, bB, width);
+		}
+
+
+		public void ModifyEllipse(int ellipseIndex, Point o, float aO, float bO, float angle, Color color, Color borderColor, float width)
+		{
+			float x = (float)o.X;
+			float y = (float)o.Y;
+
+			float r = color.R / 255.0f;
+			float g = color.G / 255.0f;
+			float b = color.B / 255.0f;
+
+			float rB = borderColor.R / 255.0f;
+			float gB = borderColor.G / 255.0f;
+			float bB = borderColor.B / 255.0f;
+
+			DirectXDll.ModifyEllipse(ellipseIndex, x, y, aO, bO, angle, r, g, b, rB, gB, bB, width);
 		}
 
 
@@ -140,20 +196,20 @@ namespace KustomPhotoshop
 
 
 		public void RenderTriangle(int triangleIndex)
-        {
-            DirectXDll.RenderTriangle(triangleIndex);
-        }
+		{
+			DirectXDll.RenderTriangle(triangleIndex);
+		}
 
 
-        public void RenderQuad(int quadIndex)
-        {
-            throw new NotImplementedException();
-        }
+		public void RenderQuad(int quadIndex)
+		{
+			DirectXDll.RenderQuad(quadIndex);
+		}
 
 
-        public void RenderEllipse(int ellipseIndex)
-        {
-            throw new NotImplementedException();
+		public void RenderEllipse(int ellipseIndex)
+		{
+			DirectXDll.RenderEllipse(ellipseIndex);
 		}
 
 
@@ -170,20 +226,20 @@ namespace KustomPhotoshop
 
 
 		public void RemoveTriangle(int triangleIndex)
-        {
-            DirectXDll.RemoveTriangle(triangleIndex);
-        }
+		{
+			DirectXDll.RemoveTriangle(triangleIndex);
+		}
 
 
-        public void RemoveQuad(int quadIndex)
-        {
-            throw new NotImplementedException();
-        }
+		public void RemoveQuad(int quadIndex)
+		{
+			DirectXDll.RemoveQuad(quadIndex);
+		}
 
 
-        public void RemoveEllipse(int ellipseIndex)
-        {
-            throw new NotImplementedException();
-        }
+		public void RemoveEllipse(int ellipseIndex)
+		{
+			DirectXDll.RemoveEllipse(ellipseIndex);
+		}
 	}
 }

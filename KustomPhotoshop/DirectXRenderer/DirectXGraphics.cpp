@@ -140,7 +140,7 @@ HRESULT DirectXGraphics::Resize(HWND hwnd)
 
 void DirectXGraphics::BeginRender()
 {
-	const float clearColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+	const float clearColor[4] = {0.75f, 0.75f, 0.75f, 1.0f};
 	painter->ClearRenderTargetView(renderTargetView, clearColor);
 
 	painter->OMSetRenderTargets(1, &renderTargetView, 0);

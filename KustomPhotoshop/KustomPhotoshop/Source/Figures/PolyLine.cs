@@ -53,7 +53,7 @@ namespace KustomPhotoshop
 		}
 
 
-		public bool PointIsInside(Point p)
+		public override bool PointIsInside(Point p)
 		{
 			for(int i = 0; i < points.Count - 1; i++)
 			{

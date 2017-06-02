@@ -37,7 +37,7 @@ class PolyLine
 	~PolyLine();
 
 	HRESULT InitFX(ID3D11Device *device, LPCWSTR fileName);
-	HRESULT InitGeometry(ID3D11Device *device, vector<float> &points, float lineWidth, XMFLOAT4 color, float depth);
+	HRESULT InitGeometry(ID3D11Device *device, vector<float> &points, float lineWidth, XMFLOAT4 color);
 
 	void RenderLines(ID3D11DeviceContext *painter, Camera2D &camera);
 	void RenderPoints(ID3D11DeviceContext *painter, Camera2D &camera);

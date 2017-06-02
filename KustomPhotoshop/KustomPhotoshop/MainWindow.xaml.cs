@@ -58,6 +58,8 @@ namespace KustomPhotoshop
 		private Point middleMouseClickCoords;
 		private Point rightMouseClickCoords;
 
+		private bool isTranslating;
+
 		private Boundary upscalingBoundary;
 		private Point lastScalingPoint;
 
@@ -117,7 +119,7 @@ namespace KustomPhotoshop
 			set
 			{
 				currentBorderWidth = value;
-				labelWidth.Content = currentBorderWidth.ToString("N2");
+				widthLabel.Content = currentBorderWidth.ToString("N2");
 
 				if(currentFigure != null)
 				{
@@ -191,7 +193,7 @@ namespace KustomPhotoshop
 
 			CurrentColor = Color.FromRgb(255, 255, 255);
 			CurrentBorderColor = Color.FromRgb(0, 0, 0);
-			CurrentBorderWidth = 2.0f;
+			CurrentBorderWidth = 1.0f;
 
 			CurrentCoords = new Point(0.0, 0.0);
 			CurrentZoom = 1.0f;
@@ -199,6 +201,8 @@ namespace KustomPhotoshop
 			leftMouseButtonIsPressed = false;
 			middleMouseButtonIsPressed = false;
 			rightMouseButtonIsPressed = false;
+
+			isTranslating = false;
 
 			upscalingBoundary = Boundary.NONE;
 		}
@@ -242,8 +246,8 @@ namespace KustomPhotoshop
 
 		private void OnMouseDown(MouseButton button, int xMouse, int yMouse)
 		{
-			float x = (float)cameraCoords.X + (xMouse - directXControl.Size.Width / 2.0f) / cameraZoom;
-			float y = (float)cameraCoords.Y + (directXControl.Size.Height / 2.0f - yMouse) / cameraZoom;
+			float x = (float)cameraCoords.X + (xMouse - directXControl.Size.Width / 2.0f) / CurrentZoom;
+			float y = (float)cameraCoords.Y + (directXControl.Size.Height / 2.0f - yMouse) / CurrentZoom;
 
 			switch(button)
 			{
@@ -258,7 +262,7 @@ namespace KustomPhotoshop
 						{
 							if(currentFigure != null)
 							{
-								upscalingBoundary = boundingBox.PointIsOnBoundary(new Point(x, y));
+								upscalingBoundary = boundingBox.PointIsOnBoundary(new Point(x, y), CurrentZoom);
 								lastScalingPoint = new Point(x, y);
 							}
 
@@ -278,6 +282,8 @@ namespace KustomPhotoshop
 										List<Point> boundingBoxPoints = (currentFigure as Figure).BoundingBoxPoints;
 										boundingBox = new BoundingBox(boundingBoxPoints[0], boundingBoxPoints[1]);
 										ModifyFigure(boundingBox, directXRenderer);
+
+										isTranslating = true;
 										directXControl.Invalidate();
 
 										break;
@@ -300,18 +306,20 @@ namespace KustomPhotoshop
 							{
 								List<Point> currentPoints = new List<Point>(formingPoints);
 								currentPoints.Add(new Point(x, y));
-								formingFigure = new PolyLine(currentPoints, currentBorderColor, currentBorderWidth);
+								formingFigure = new PolyLine(currentPoints, CurrentBorderColor, CurrentBorderWidth);
 								InitializeFigure(formingFigure, directXRenderer);
 							}
 							else if(formingPoints.Count >= 6)
 							{
 								ReleaseFigure(formingFigure, directXRenderer);
 								formingFigure = null;
-								PolyLine polyLine = new PolyLine(formingPoints, currentBorderColor, currentBorderWidth);
+								PolyLine polyLine = new PolyLine(formingPoints, CurrentColor, CurrentBorderWidth);
 								InitializeFigure(polyLine, directXRenderer);
 								figures.Add(polyLine);
 								drawMode = DrawMode.NONE;
+
 								polyLineButton.IsChecked = false;
+								directXControl.Invalidate();
 							}
 							break;
 						}
@@ -322,23 +330,96 @@ namespace KustomPhotoshop
 							{
 								List<Point> currentPoints = new List<Point>(formingPoints);
 								currentPoints.Add(new Point(x, y));
-								formingFigure = new PolyLine(currentPoints, currentColor, currentBorderWidth);
+								formingFigure = new PolyLine(currentPoints, CurrentColor, CurrentBorderWidth);
 								InitializeFigure(formingFigure, directXRenderer);
 							}
 							else if(formingPoints.Count == 2)
 							{
-								formingFigure = new Triangle(formingPoints[0], formingPoints[1], formingPoints[1], currentColor, currentBorderColor, currentBorderWidth);
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = new Triangle(formingPoints[0], formingPoints[1], formingPoints[1], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
 								InitializeFigure(formingFigure, directXRenderer);
 							}
 							else if(formingPoints.Count >= 3)
 							{
 								ReleaseFigure(formingFigure, directXRenderer);
 								formingFigure = null;
-								Triangle triangle = new Triangle(formingPoints[0], formingPoints[1], formingPoints[2], currentColor, currentBorderColor, currentBorderWidth);
+								Triangle triangle = new Triangle(formingPoints[0], formingPoints[1], formingPoints[2], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
 								InitializeFigure(triangle, directXRenderer);
 								figures.Add(triangle);
 								drawMode = DrawMode.NONE;
+
 								triangleButton.IsChecked = false;
+								directXControl.Invalidate();
+							}
+							break;
+						}
+						case DrawMode.QUAD:
+						{
+							formingPoints.Add(new Point(x, y));
+							if(formingPoints.Count == 1)
+							{
+								List<Point> currentPoints = new List<Point>(formingPoints);
+								currentPoints.Add(new Point(x, y));
+								formingFigure = new PolyLine(currentPoints, CurrentColor, CurrentBorderWidth);
+								InitializeFigure(formingFigure, directXRenderer);
+							}
+							else if(formingPoints.Count == 2)
+							{
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = new Triangle(formingPoints[0], formingPoints[1], formingPoints[1], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
+								InitializeFigure(formingFigure, directXRenderer);
+							}
+							else if(formingPoints.Count == 3)
+							{
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = new Quad(formingPoints[0], formingPoints[1], formingPoints[2], formingPoints[2], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
+								InitializeFigure(formingFigure, directXRenderer);
+							}
+							else if(formingPoints.Count >= 4)
+							{
+								if((formingFigure as Quad).IsConvex())
+								{
+									Quad quad = new Quad(formingPoints[0], formingPoints[1], formingPoints[2], formingPoints[3], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
+									InitializeFigure(quad, directXRenderer);
+									figures.Add(quad);
+								}
+
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = null;
+								drawMode = DrawMode.NONE;
+
+								quadButton.IsChecked = false;
+								directXControl.Invalidate();
+							}
+							break;
+						}
+						case DrawMode.ELLIPSE:
+						{
+							formingPoints.Add(new Point(x, y));
+							if(formingPoints.Count == 1)
+							{
+								List<Point> currentPoints = new List<Point>(formingPoints);
+								currentPoints.Add(new Point(x, y));
+								formingFigure = new PolyLine(currentPoints, CurrentColor, CurrentBorderWidth);
+								InitializeFigure(formingFigure, directXRenderer);
+							}
+							else if(formingPoints.Count == 2)
+							{
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = new Ellipse(formingPoints[0], formingPoints[1], formingPoints[1], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
+								InitializeFigure(formingFigure, directXRenderer);
+							}
+							else if(formingPoints.Count >= 3)
+							{
+								ReleaseFigure(formingFigure, directXRenderer);
+								formingFigure = null;
+								Ellipse ellipse = new Ellipse(formingPoints[0], formingPoints[1], formingPoints[2], CurrentColor, CurrentBorderColor, CurrentBorderWidth);
+								InitializeFigure(ellipse, directXRenderer);
+								figures.Add(ellipse);
+								drawMode = DrawMode.NONE;
+
+								ellipseButton.IsChecked = false;
+								directXControl.Invalidate();
 							}
 							break;
 						}
@@ -365,8 +446,8 @@ namespace KustomPhotoshop
 
 		private void OnMouseMove(int xMouse, int yMouse)
 		{
-			float x = (float)cameraCoords.X + (xMouse - directXControl.Size.Width / 2.0f) / cameraZoom;
-			float y = (float)cameraCoords.Y + (directXControl.Size.Height / 2.0f - yMouse) / cameraZoom;
+			float x = (float)CurrentCoords.X + (xMouse - directXControl.Size.Width / 2.0f) / CurrentZoom;
+			float y = (float)CurrentCoords.Y + (directXControl.Size.Height / 2.0f - yMouse) / CurrentZoom;
 
 			switch(drawMode)
 			{
@@ -374,7 +455,7 @@ namespace KustomPhotoshop
 				{
 					if(currentFigure != null)
 					{
-						switch(boundingBox.PointIsOnBoundary(new Point(x, y)))
+						switch(boundingBox.PointIsOnBoundary(new Point(x, y), CurrentZoom))
 						{
 							case Boundary.NONE:
 							{
@@ -463,7 +544,7 @@ namespace KustomPhotoshop
 
 							directXControl.Invalidate();
 						}
-						else if(currentFigure.PointIsInside(new Point(x, y)))
+						else if(isTranslating)
 						{
 							Translate translate = new Translate(new Point((xMouse - leftMouseClickCoords.X) / CurrentZoom, (leftMouseClickCoords.Y - yMouse) / CurrentZoom));
 							(currentFigure as Figure).ApplyTransform(translate);
@@ -501,9 +582,9 @@ namespace KustomPhotoshop
 						List<Point> currentPoints = new List<Point>(formingPoints);
 						currentPoints.Add(new Point(x, y));
 						(formingFigure as PolyLine).points = currentPoints;
-						(formingFigure as PolyLine).color = currentBorderColor;
-						(formingFigure as PolyLine).borderColor = currentBorderColor;
-						(formingFigure as PolyLine).borderWidth = currentBorderWidth;
+						(formingFigure as PolyLine).color = CurrentColor;
+						(formingFigure as PolyLine).borderColor = CurrentBorderColor;
+						(formingFigure as PolyLine).borderWidth = CurrentBorderWidth;
 						ModifyFigure(formingFigure, directXRenderer);
 
 						directXControl.Invalidate();
@@ -516,10 +597,10 @@ namespace KustomPhotoshop
 					{
 						List<Point> currentPoints = new List<Point>(formingPoints);
 						currentPoints.Add(new Point(x, y));
-						(formingFigure as PolyLine).points = currentPoints;
-						(formingFigure as PolyLine).color = currentBorderColor;
-						(formingFigure as PolyLine).borderColor = currentBorderColor;
-						(formingFigure as PolyLine).borderWidth = currentBorderWidth;
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentBorderColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
 						ModifyFigure(formingFigure, directXRenderer);
 
 						directXControl.Invalidate();
@@ -528,10 +609,66 @@ namespace KustomPhotoshop
 					{
 						List<Point> currentPoints = new List<Point>(formingPoints);
 						currentPoints.Add(new Point(x, y));
-						(formingFigure as Triangle).points = currentPoints;
-						(formingFigure as Triangle).color = currentColor;
-						(formingFigure as Triangle).borderColor = currentBorderColor;
-						(formingFigure as Triangle).borderWidth = currentBorderWidth;
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
+						ModifyFigure(formingFigure, directXRenderer);
+
+						directXControl.Invalidate();
+					}
+					break;
+				}
+				case DrawMode.QUAD:
+				{
+					if(formingPoints.Count == 1)
+					{
+						List<Point> currentPoints = new List<Point>(formingPoints);
+						currentPoints.Add(new Point(x, y));
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentBorderColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
+						ModifyFigure(formingFigure, directXRenderer);
+
+						directXControl.Invalidate();
+					}
+					else if(formingPoints.Count == 2 || formingPoints.Count == 3)
+					{
+						List<Point> currentPoints = new List<Point>(formingPoints);
+						currentPoints.Add(new Point(x, y));
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
+						ModifyFigure(formingFigure, directXRenderer);
+
+						directXControl.Invalidate();
+					}
+					break;
+				}
+				case DrawMode.ELLIPSE:
+				{
+					if(formingPoints.Count == 1)
+					{
+						List<Point> currentPoints = new List<Point>(formingPoints);
+						currentPoints.Add(new Point(x, y));
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentBorderColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
+						ModifyFigure(formingFigure, directXRenderer);
+
+						directXControl.Invalidate();
+					}
+					else if(formingPoints.Count == 2)
+					{
+						List<Point> currentPoints = new List<Point>(formingPoints);
+						currentPoints.Add(new Point(x, y));
+						(formingFigure as Figure).points = currentPoints;
+						(formingFigure as Figure).color = CurrentColor;
+						(formingFigure as Figure).borderColor = CurrentBorderColor;
+						(formingFigure as Figure).borderWidth = CurrentBorderWidth;
 						ModifyFigure(formingFigure, directXRenderer);
 
 						directXControl.Invalidate();
@@ -575,6 +712,7 @@ namespace KustomPhotoshop
 				}
 			}
 
+			isTranslating = false;
 			upscalingBoundary = Boundary.NONE;
 		}
 
@@ -753,6 +891,7 @@ namespace KustomPhotoshop
 			directXControl.Release();
 		}
 
+
 		private void OnKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			switch(e.Key)
@@ -763,7 +902,7 @@ namespace KustomPhotoshop
 					{
 						ReleaseFigure(formingFigure, directXRenderer);
 						formingFigure = null;
-						PolyLine polyLine = new PolyLine(formingPoints, currentBorderColor, currentBorderWidth);
+						PolyLine polyLine = new PolyLine(formingPoints, CurrentColor, CurrentBorderWidth);
 						InitializeFigure(polyLine, directXRenderer);
 						figures.Add(polyLine);
 						drawMode = DrawMode.NONE;
@@ -774,6 +913,72 @@ namespace KustomPhotoshop
 					break;
 				}
 			}
+		}
+
+
+		private void foregroundButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(currentFigure != null)
+			{
+				figures.Remove(currentFigure);
+				figures.Add(currentFigure);
+				directXControl.Invalidate();
+			}
+		}
+
+
+		private void deleteButton_Click(object sender, RoutedEventArgs e)
+		{
+			if(currentFigure != null)
+			{
+				ReleaseFigure(currentFigure, directXRenderer);
+				figures.Remove(currentFigure);
+				currentFigure = null;
+				boundingBox = null;
+				directXControl.Invalidate();
+			}
+		}
+
+
+		private void newMenu_Click(object sender, RoutedEventArgs e)
+		{
+			CurrentColor = Colors.White;
+			CurrentBorderColor = Colors.Black;
+			CurrentBorderWidth = 1.0f;
+
+			CurrentCoords = new Point(0.0f, 0.0f);
+			CurrentZoom = 1.0f;
+
+
+			ReleaseFigure(formingFigure, directXRenderer);
+
+			foreach(IDrawable figure in figures)
+			{
+				ReleaseFigure(figure, directXRenderer);
+			}
+
+			figures.Clear();
+			currentFigure = null;
+			formingFigure = null;
+			boundingBox = null;
+		}
+
+
+		private void openMenu_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+
+		private void saveMenu_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+
+		private void exitMenu_Click(object sender, RoutedEventArgs e)
+		{
+			Close();
 		}
 	}
 }

@@ -16,13 +16,13 @@ PolyLine::~PolyLine()
 
 struct LineVertex
 {
-	XMFLOAT3 Pos;
-	XMFLOAT4 Color;
-	XMFLOAT2 UV;
+	XMFLOAT3 pos;
+	XMFLOAT4 color;
+	XMFLOAT2 uv;
 };
 
 
-HRESULT PolyLine::InitGeometry(ID3D11Device *device, vector<float> &points, float lineWidth, XMFLOAT4 color, float depth)
+HRESULT PolyLine::InitGeometry(ID3D11Device *device, vector<float> &points, float lineWidth, XMFLOAT4 color)
 {
 	HRESULT hr;
 
@@ -46,31 +46,31 @@ HRESULT PolyLine::InitGeometry(ID3D11Device *device, vector<float> &points, floa
 		int signx = v.y >= 0 ? 1 : -1;
 		int signy = v.x >= 0 ? -1 : 1;
 
-		XMFLOAT2 r = XMFLOAT2(lineWidth * signx * sqrt(v.y * v.y / (v.x * v.x + v.y * v.y)), lineWidth * signy * sqrt(v.x * v.x / (v.x * v.x + v.y * v.y)));
+		XMFLOAT2 r = XMFLOAT2(lineWidth / 2 * signx * sqrt(v.y * v.y / (v.x * v.x + v.y * v.y)), lineWidth / 2 * signy * sqrt(v.x * v.x / (v.x * v.x + v.y * v.y)));
 
-		lineVertices[i * 3].Pos = XMFLOAT3(a.x + r.x, a.y + r.y, depth);
-		lineVertices[i * 3].Color = color;
-		lineVertices[i * 3].UV = XMFLOAT2(0.0f, 0.0f);
+		lineVertices[i * 3].pos = XMFLOAT3(a.x + r.x, a.y + r.y, 0.0f);
+		lineVertices[i * 3].color = color;
+		lineVertices[i * 3].uv = XMFLOAT2(0.0f, 0.0f);
 
-		lineVertices[i * 3 + 1].Pos = XMFLOAT3(a.x - r.x, a.y - r.y, depth);
-		lineVertices[i * 3 + 1].Color = color;
-		lineVertices[i * 3 + 1].UV = XMFLOAT2(1.0f, 0.0f);
+		lineVertices[i * 3 + 1].pos = XMFLOAT3(a.x - r.x, a.y - r.y, 0.0f);
+		lineVertices[i * 3 + 1].color = color;
+		lineVertices[i * 3 + 1].uv = XMFLOAT2(1.0f, 0.0f);
 
-		lineVertices[i * 3 + 2].Pos = XMFLOAT3(b.x + r.x, b.y + r.y, depth);
-		lineVertices[i * 3 + 2].Color = color;
-		lineVertices[i * 3 + 2].UV = XMFLOAT2(0.0f, 1.0f);
+		lineVertices[i * 3 + 2].pos = XMFLOAT3(b.x + r.x, b.y + r.y, 0.0f);
+		lineVertices[i * 3 + 2].color = color;
+		lineVertices[i * 3 + 2].uv = XMFLOAT2(0.0f, 1.0f);
 
-		lineVertices[i * 3 + 3].Pos = XMFLOAT3(a.x - r.x, a.y - r.y, depth);
-		lineVertices[i * 3 + 3].Color = color;
-		lineVertices[i * 3 + 3].UV = XMFLOAT2(1.0f, 0.0f);
+		lineVertices[i * 3 + 3].pos = XMFLOAT3(a.x - r.x, a.y - r.y, 0.0f);
+		lineVertices[i * 3 + 3].color = color;
+		lineVertices[i * 3 + 3].uv = XMFLOAT2(1.0f, 0.0f);
 
-		lineVertices[i * 3 + 4].Pos = XMFLOAT3(b.x - r.x, b.y - r.y, depth);
-		lineVertices[i * 3 + 4].Color = color;
-		lineVertices[i * 3 + 4].UV = XMFLOAT2(1.0f, 1.0f);
+		lineVertices[i * 3 + 4].pos = XMFLOAT3(b.x - r.x, b.y - r.y, 0.0f);
+		lineVertices[i * 3 + 4].color = color;
+		lineVertices[i * 3 + 4].uv = XMFLOAT2(1.0f, 1.0f);
 
-		lineVertices[i * 3 + 5].Pos = XMFLOAT3(b.x + r.x, b.y + r.y, depth);
-		lineVertices[i * 3 + 5].Color = color;
-		lineVertices[i * 3 + 5].UV = XMFLOAT2(0.0f, 1.0f);
+		lineVertices[i * 3 + 5].pos = XMFLOAT3(b.x + r.x, b.y + r.y, 0.0f);
+		lineVertices[i * 3 + 5].color = color;
+		lineVertices[i * 3 + 5].uv = XMFLOAT2(0.0f, 1.0f);
 	}
 
 	D3D11_BUFFER_DESC vbDesc;
@@ -96,29 +96,29 @@ HRESULT PolyLine::InitGeometry(ID3D11Device *device, vector<float> &points, floa
 	{
 		XMFLOAT2 point = XMFLOAT2(points[i], points[i + 1]);
 
-		pointVertices[i * 3].Pos = XMFLOAT3(point.x - lineWidth, point.y + lineWidth, depth);
-		pointVertices[i * 3].Color = color;
-		pointVertices[i * 3].UV = XMFLOAT2(-1.0f, -1.0f);
+		pointVertices[i * 3].pos = XMFLOAT3(point.x - lineWidth / 2, point.y + lineWidth / 2, 0.0f);
+		pointVertices[i * 3].color = color;
+		pointVertices[i * 3].uv = XMFLOAT2(-1.0f, -1.0f);
 
-		pointVertices[i * 3 + 1].Pos = XMFLOAT3(point.x + lineWidth, point.y + lineWidth, depth);
-		pointVertices[i * 3 + 1].Color = color;
-		pointVertices[i * 3 + 1].UV = XMFLOAT2(1.0f, -1.0f);
+		pointVertices[i * 3 + 1].pos = XMFLOAT3(point.x + lineWidth / 2, point.y + lineWidth / 2, 0.0f);
+		pointVertices[i * 3 + 1].color = color;
+		pointVertices[i * 3 + 1].uv = XMFLOAT2(1.0f, -1.0f);
 
-		pointVertices[i * 3 + 2].Pos = XMFLOAT3(point.x - lineWidth, point.y - lineWidth, depth);
-		pointVertices[i * 3 + 2].Color = color;
-		pointVertices[i * 3 + 2].UV = XMFLOAT2(-1.0f, 1.0f);
+		pointVertices[i * 3 + 2].pos = XMFLOAT3(point.x - lineWidth / 2, point.y - lineWidth / 2, 0.0f);
+		pointVertices[i * 3 + 2].color = color;
+		pointVertices[i * 3 + 2].uv = XMFLOAT2(-1.0f, 1.0f);
 
-		pointVertices[i * 3 + 3].Pos = XMFLOAT3(point.x + lineWidth, point.y + lineWidth, depth);
-		pointVertices[i * 3 + 3].Color = color;
-		pointVertices[i * 3 + 3].UV = XMFLOAT2(1.0f, -1.0f);
+		pointVertices[i * 3 + 3].pos = XMFLOAT3(point.x + lineWidth / 2, point.y + lineWidth / 2, 0.0f);
+		pointVertices[i * 3 + 3].color = color;
+		pointVertices[i * 3 + 3].uv = XMFLOAT2(1.0f, -1.0f);
 
-		pointVertices[i * 3 + 4].Pos = XMFLOAT3(point.x + lineWidth, point.y - lineWidth, depth);
-		pointVertices[i * 3 + 4].Color = color;
-		pointVertices[i * 3 + 4].UV = XMFLOAT2(1.0f, 1.0f);
+		pointVertices[i * 3 + 4].pos = XMFLOAT3(point.x + lineWidth / 2, point.y - lineWidth / 2, 0.0f);
+		pointVertices[i * 3 + 4].color = color;
+		pointVertices[i * 3 + 4].uv = XMFLOAT2(1.0f, 1.0f);
 
-		pointVertices[i * 3 + 5].Pos = XMFLOAT3(point.x - lineWidth, point.y - lineWidth, depth);
-		pointVertices[i * 3 + 5].Color = color;
-		pointVertices[i * 3 + 5].UV = XMFLOAT2(-1.0f, 1.0f);
+		pointVertices[i * 3 + 5].pos = XMFLOAT3(point.x - lineWidth / 2, point.y - lineWidth / 2, 0.0f);
+		pointVertices[i * 3 + 5].color = color;
+		pointVertices[i * 3 + 5].uv = XMFLOAT2(-1.0f, 1.0f);
 	}
 
 	vbDesc.ByteWidth = sizeof(LineVertex) * pointVertices.size();

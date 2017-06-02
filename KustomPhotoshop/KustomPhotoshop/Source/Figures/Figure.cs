@@ -25,7 +25,7 @@ namespace KustomPhotoshop
 			}
 		}
 
-		public Point Center
+		public virtual Point Center
 		{
 			get
 			{
@@ -44,7 +44,7 @@ namespace KustomPhotoshop
 			}
 		}
 
-		public List<Point> BoundingBoxPoints
+		public virtual List<Point> BoundingBoxPoints
 		{
 			get
 			{
@@ -90,5 +90,8 @@ namespace KustomPhotoshop
 				points[i] = transform.Transform(points[i]);
 			}
 		}
+
+
+		public abstract bool PointIsInside(Point p);
 	}
 }

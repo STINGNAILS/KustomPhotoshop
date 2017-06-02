@@ -19,11 +19,9 @@ class Triangle
 {
 	private:
 
-	float width;
-
 	ID3D11InputLayout *inputLayout;
 	ID3D11Buffer *vertexBuffer;
-	ID3D11Buffer *triangleConstantBuffer;
+	ID3D11Buffer *constantBuffer;
 	ID3D11RasterizerState *basicRasterizerState;
 	ID3D11VertexShader *vertexShader;
 	ID3D11PixelShader *pixelShader;

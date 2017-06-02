@@ -122,11 +122,23 @@ public class DirectXDll
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "AddTriangle")]
 	public static extern int AddTriangle(float x1, float y1, float x2, float y2, float x3, float y3, float r, float g, float b, float rB, float gB, float bB, float width);
 
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "AddQuad")]
+	public static extern int AddQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float r, float g, float b, float rB, float gB, float bB, float width);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "AddEllipse")]
+	public static extern int AddEllipse(float x, float y, float aO, float bO, float angle, float r, float g, float b, float rB, float gB, float bB, float width);
+
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ModifyPolyLine")]
 	public static extern void ModifyPolyLine(int polyLineIndex, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float x5, float y5, float x6, float y6, int pointsNum, float r, float g, float b, float width);
 
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ModifyTriangle")]
 	public static extern void ModifyTriangle(int triangleIndex, float x1, float y1, float x2, float y2, float x3, float y3, float r, float g, float b, float rB, float gB, float bB, float width);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ModifyQuad")]
+	public static extern void ModifyQuad(int quadIndex, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, float r, float g, float b, float rB, float gB, float bB, float width);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ModifyEllipse")]
+	public static extern void ModifyEllipse(int ellipseIndex, float x, float y, float aO, float bO, float angle, float r, float g, float b, float rB, float gB, float bB, float width);
 
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "ModifyBoundingBox")]
 	public static extern void ModifyBoundingBox(float xMin, float yMin, float xMax, float yMax);
@@ -137,6 +149,12 @@ public class DirectXDll
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderTriangle")]
 	public static extern void RenderTriangle(int triangleIndex);
 
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderQuad")]
+	public static extern void RenderQuad(int quadIndex);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderEllipse")]
+	public static extern void RenderEllipse(int ellipseIndex);
+
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RenderBoundingBox")]
 	public static extern void RenderBoundingBox();
 
@@ -145,4 +163,10 @@ public class DirectXDll
 
 	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RemoveTriangle")]
 	public static extern void RemoveTriangle(int triangleIndex);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RemoveQuad")]
+	public static extern void RemoveQuad(int quadIndex);
+
+	[DllImport("DirectXRenderer.dll", CallingConvention = CallingConvention.Cdecl, EntryPoint = "RemoveEllipse")]
+	public static extern void RemoveEllipse(int ellipseIndex);
 }

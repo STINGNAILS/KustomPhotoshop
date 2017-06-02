@@ -49,7 +49,7 @@ namespace KustomPhotoshop
 		}
 
 
-		public bool PointIsInside(Point p)
+		public override bool PointIsInside(Point p)
 		{
 			return false;
 		}
@@ -61,15 +61,16 @@ namespace KustomPhotoshop
 		}
 
 
-		public Boundary PointIsOnBoundary(Point p)
+		public Boundary PointIsOnBoundary(Point p, float zoom)
 		{
-			if(Math.Abs(p.Y - points[1].Y) < 3.0f)
+			float realPixels = 3.0f / zoom;
+			if(Math.Abs(p.Y - points[1].Y) < realPixels)
 			{
-				if(Math.Abs(p.X - points[0].X) < 3.0f)
+				if(Math.Abs(p.X - points[0].X) < realPixels)
 				{
 					return Boundary.TOPLEFT;
 				}
-				else if(Math.Abs(p.X - points[1].X) < 3.0f)
+				else if(Math.Abs(p.X - points[1].X) < realPixels)
 				{
 					return Boundary.TOPRIGHT;
 				}
@@ -78,9 +79,9 @@ namespace KustomPhotoshop
 					return Boundary.TOP;
 				}
 			}
-			else if(Math.Abs(p.X - points[0].X) < 3.0f)
+			else if(Math.Abs(p.X - points[0].X) < realPixels)
 			{
-				if(Math.Abs(p.Y - points[0].Y) < 3.0f)
+				if(Math.Abs(p.Y - points[0].Y) < realPixels)
 				{
 					return Boundary.BOTTOMLEFT;
 				}
@@ -89,9 +90,9 @@ namespace KustomPhotoshop
 					return Boundary.LEFT;
 				}
 			}
-			else if(Math.Abs(p.X - points[1].X) < 3.0f)
+			else if(Math.Abs(p.X - points[1].X) < realPixels)
 			{
-				if(Math.Abs(p.Y - points[0].Y) < 3.0f)
+				if(Math.Abs(p.Y - points[0].Y) < realPixels)
 				{
 					return Boundary.BOTTOMRIGHT;
 				}
@@ -100,7 +101,7 @@ namespace KustomPhotoshop
 					return Boundary.RIGHT;
 				}
 			}
-			else if(Math.Abs(p.Y - points[0].Y) < 3.0f)
+			else if(Math.Abs(p.Y - points[0].Y) < realPixels)
 			{
 				if(p.X > points[0].X && p.X < points[1].X)
 				{

@@ -39,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -116,8 +117,10 @@
       <DependentUpon>DirectXControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Figures\BoundingBox.cs" />
+    <Compile Include="Source\Figures\Ellipse.cs" />
     <Compile Include="Source\Figures\Figure.cs" />
     <Compile Include="Source\Figures\PolyLine.cs" />
+    <Compile Include="Source\Figures\Quad.cs" />
     <Compile Include="Source\Figures\Triangle.cs" />
     <Compile Include="Source\Renderers\DirectXRenderer.cs" />
     <Compile Include="Source\Transforms\Rotate.cs" />
@@ -210,10 +213,32 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\triangle.png" />
+    <Resource Include="Resources\Triangle.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\triangle2.jpg">
+    <Resource Include="Resources\PolyLine.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Ellipse.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Quad.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Arrow Up - 08.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Trash-01-WF.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
